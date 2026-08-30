@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --ink-900: #10151F;
+  --ink-700: #1B2333;
+  --paper-100: #EFEAE0;
+  --paper-50: #F7F5F0;
+  --line: #C9C2B2;
+  --ink-text: #171A1F;
+  --paper-text: #EDE9DF;
+  --brass-500: #C68E3F;
+  --brass-700: #9C6B27;
+  --signal-red: #A63A2E;
+  --verified-teal: #3F6B62;
+  --muted-slate: #5B6472;
+}
+
+body {
+  background-color: var(--paper-100);
+  color: var(--ink-text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Utilities for Case Tag notch and UI accents */
+.case-tag-notch {
+  clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px);
+}
+
+.case-tag-chip-notch {
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+}
+
+/* Perforation dashed line */
+.perforation-line {
+  border-bottom: 1px dashed var(--line);
+}
+
+/* Accessible focus ring */
+*:focus-visible {
+  outline: 2px solid var(--brass-500) !important;
+  outline-offset: 2px !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink-900);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--brass-500);
+  border-radius: 3px;
+}
+
