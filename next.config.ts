@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const isStaticExport = process.env.OUTPUT_MODE === "export";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
   output: isStaticExport ? "export" : undefined,
+  basePath: basePath || undefined,
+  assetPrefix: basePath || undefined,
   images: {
     unoptimized: true,
   },

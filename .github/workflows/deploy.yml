@@ -27,8 +27,13 @@ jobs:
 
       - name: Build Next.js Application
         env:
+          OUTPUT_MODE: export
+          NEXT_PUBLIC_BASE_PATH: /TraceIQ
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: npm run build
+
+      - name: Add .nojekyll file
+        run: touch out/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
