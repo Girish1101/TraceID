@@ -1,5 +1,7 @@
 import cloudinary from "cloudinary";
 
+export const dynamic = "force-static";
+
 if (process.env.CLOUDINARY_CLOUD_NAME) {
   cloudinary.v2.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

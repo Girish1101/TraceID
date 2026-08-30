@@ -4,6 +4,8 @@ import MissingPerson from "@/app/models/missingPersonModel";
 import { getLocalCases, getLocalStats } from "@/lib/localStore";
 import { getNeonCases, getNeonStats, getNeonSql } from "@/lib/neonDb";
 
+export const dynamic = "force-static";
+
 const MONGODB_URI = process.env.MongoURL as string;
 
 async function connectDB() {

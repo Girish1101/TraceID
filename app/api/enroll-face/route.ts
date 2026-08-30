@@ -5,6 +5,8 @@ import MissingPerson from "@/app/models/missingPersonModel";
 import { saveLocalCase } from "@/lib/localStore";
 import { saveNeonCase, getNeonSql } from "@/lib/neonDb";
 
+export const dynamic = "force-static";
+
 const MONGODB_URI = process.env.MongoURL as string;
 const FLASK_URL   = process.env.FLASK_URL || "http://localhost:5000";
 

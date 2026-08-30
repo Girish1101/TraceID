@@ -1,6 +1,8 @@
 import { pineconeIndex } from "@/lib/pinecone";
 import { v4 as uuidv4 } from "uuid";
 
+export const dynamic = "force-static";
+
 export async function POST(req: Request) {
   const {
     embedding,

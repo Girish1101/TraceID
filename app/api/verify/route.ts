@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { pineconeIndex } from "@/lib/pinecone";
 
+export const dynamic = "force-static";
+
 const EMBEDDING_API = process.env.FLASK_URL ? `${process.env.FLASK_URL}/get_embeddings` : "http://localhost:5000/get_embeddings";
 const SIMILARITY_THRESHOLD = 0.3; // 🔥 tune this
 
