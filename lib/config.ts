@@ -1,7 +1,7 @@
 export const VERCEL_BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_VERCEL_URL ||
-  "https://trace-qc3difxjx-hmmm10.vercel.app";
+  "https://trace-iq-eight.vercel.app";
 
 export function getApiUrl(path: string): string {
   if (typeof window !== "undefined") {
