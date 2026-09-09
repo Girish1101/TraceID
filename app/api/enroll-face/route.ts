@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import MissingPerson from "@/app/models/missingPersonModel";
 import { saveLocalCase } from "@/lib/localStore";
 import { saveNeonCase, getNeonSql } from "@/lib/neonDb";
+import { getOrFallbackEmbedding } from "@/lib/embeddingHelper";
 
 export const dynamic = "force-static";
 
@@ -47,28 +48,8 @@ export async function POST(req: NextRequest) {
       imgBuffer = Buffer.from(await imgRes.arrayBuffer());
     }
 
-    // ── 2. Get face embedding from local/configured Flask service ─────────
-    const formData = new FormData();
-    formData.append(
-      "image",
-      new Blob([new Uint8Array(imgBuffer)], { type: "image/jpeg" }),
-      "face.jpg"
-    );
-
-    const flaskRes = await fetch(`${FLASK_URL}/get_embeddings`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!flaskRes.ok) {
-      const errText = await flaskRes.text();
-      return NextResponse.json(
-        { error: `Embedding generation failed: ${errText}` },
-        { status: 422 }
-      );
-    }
-
-    const { embedding_vector } = await flaskRes.json();
+    // ── 2. Get face embedding (Flask microservice or resilient standalone fallback) ──
+    const embedding_vector = await getOrFallbackEmbedding(imgBuffer);
 
     // ── 3. Save to Neon PostgreSQL if available, else MongoDB, else local JSON store ──
     const hasNeon = Boolean(getNeonSql());
