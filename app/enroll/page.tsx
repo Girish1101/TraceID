@@ -80,7 +80,7 @@ export default function EnrollPage() {
     formData.append("image", file);
 
     try {
-      const detectUrl = process.env.NEXT_PUBLIC_DETECT_URL || "http://localhost:5001/detect_faces";
+      const detectUrl = process.env.NEXT_PUBLIC_DETECT_URL || (typeof window !== "undefined" && window.location.hostname.includes("github.io") ? getApiUrl("/api/detect_faces") : "http://localhost:5001/detect_faces");
       const res = await fetch(detectUrl, {
         method: "POST",
         body: formData,

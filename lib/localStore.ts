@@ -23,26 +23,36 @@ export interface SystemStats {
   matchesConfirmed: number;
 }
 
+let inMemoryCases: LocalCase[] = [];
+let inMemoryStats: SystemStats = { scansRun: 12, matchesConfirmed: 3 };
+
 function ensureFilesExist() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(FILE_PATH)) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify([], null, 2), "utf-8");
-  }
-  if (!fs.existsSync(STATS_FILE_PATH)) {
-    fs.writeFileSync(STATS_FILE_PATH, JSON.stringify({ scansRun: 12, matchesConfirmed: 3 }, null, 2), "utf-8");
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(FILE_PATH)) {
+      fs.writeFileSync(FILE_PATH, JSON.stringify([], null, 2), "utf-8");
+    }
+    if (!fs.existsSync(STATS_FILE_PATH)) {
+      fs.writeFileSync(STATS_FILE_PATH, JSON.stringify({ scansRun: 12, matchesConfirmed: 3 }, null, 2), "utf-8");
+    }
+  } catch (err) {
+    console.warn("[localStore] Filesystem initialization warning (read-only environment):", err);
   }
 }
 
 export function getLocalStats(): SystemStats {
   try {
     ensureFilesExist();
-    const content = fs.readFileSync(STATS_FILE_PATH, "utf-8");
-    return JSON.parse(content || '{"scansRun":12,"matchesConfirmed":3}');
+    if (fs.existsSync(STATS_FILE_PATH)) {
+      const content = fs.readFileSync(STATS_FILE_PATH, "utf-8");
+      return JSON.parse(content || '{"scansRun":12,"matchesConfirmed":3}');
+    }
   } catch (err) {
-    return { scansRun: 12, matchesConfirmed: 3 };
+    console.warn("[localStore] getLocalStats fallback:", err);
   }
+  return inMemoryStats;
 }
 
 export function recordScanActivity(matchFound: boolean): SystemStats {
@@ -52,19 +62,27 @@ export function recordScanActivity(matchFound: boolean): SystemStats {
   if (matchFound) {
     stats.matchesConfirmed += 1;
   }
-  fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(stats, null, 2), "utf-8");
+  inMemoryStats = { ...stats };
+  try {
+    fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(stats, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[localStore] recordScanActivity write warning:", err);
+  }
   return stats;
 }
 
 export function getLocalCases(): LocalCase[] {
   try {
     ensureFilesExist();
-    const content = fs.readFileSync(FILE_PATH, "utf-8");
-    return JSON.parse(content || "[]");
+    if (fs.existsSync(FILE_PATH)) {
+      const content = fs.readFileSync(FILE_PATH, "utf-8");
+      const cases = JSON.parse(content || "[]");
+      if (cases.length > 0) return cases;
+    }
   } catch (err) {
-    console.error("[localStore] getLocalCases error:", err);
-    return [];
+    console.warn("[localStore] getLocalCases error:", err);
   }
+  return inMemoryCases;
 }
 
 export function saveLocalCase(caseData: Omit<LocalCase, "_id" | "enrolledAt" | "updatedAt">): LocalCase {
@@ -78,6 +96,11 @@ export function saveLocalCase(caseData: Omit<LocalCase, "_id" | "enrolledAt" | "
     updatedAt: now,
   };
   cases.unshift(newCase);
-  fs.writeFileSync(FILE_PATH, JSON.stringify(cases, null, 2), "utf-8");
+  inMemoryCases = cases;
+  try {
+    fs.writeFileSync(FILE_PATH, JSON.stringify(cases, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[localStore] saveLocalCase write warning:", err);
+  }
   return newCase;
 }
